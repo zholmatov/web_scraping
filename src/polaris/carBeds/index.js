@@ -1,31 +1,31 @@
 const puppeteer = require('puppeteer')
+const helper = require("./getCarBedInfo")
 
 
-async function getCarBedsInfo() {
+const getCarBedsInfo = async function() {
 
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
     await page.goto("https://www.polarisfurniture.com/collections/bedroom")
 
-    // https://www.polarisfurniture.com/
-
     const elements = await page.evaluate(() => {
 
-        return Array.from(document.querySelectorAll("#shopify-section-collection-template > section > div.container.container--flush > div.layout > div:nth-child(2) > div > div > div > div.product-list.product-list--collection.product-list--with-sidebar div")).map(x => {
-            return Array.from(x.querySelectorAll("a div")).map(y => {
-                return y.innerHTML
-            })
+        let bedroomURLs = []
+        Array.from(document.querySelectorAll(".product-list.product-list--collection.product-list--with-sidebar > div > a")).map(x => {
+            bedroomURLs.push(x.href)
         })
+
+        return bedroomURLs
     })
 
-    const elements2 = await page.evaluate(() => {
-
-        return Array.from(document.querySelectorAll("#shopify-section-collection-template > section > div.container.container--flush > div.layout > div:nth-child(2) > div > div > div > div.product-list.product-list--collection.product-list--with-sidebar")).map(x => {
-            return x.innerHTML
-        })
+    const infos = await elements.map(async (pageURL) => {
+        const info = await helper.getCarBed(pageURL)
+        return info
     })
 
-    console.log(elements2)
+    const carBedInfos = await Promise.all(infos)
+
+    console.log(carBedInfos)
     await browser.close()
 
 }

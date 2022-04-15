@@ -1,18 +1,19 @@
 const puppeteer = require("puppeteer");
 
-async function getCarBed() {
+async function getCarBed(pageURls) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.goto(
-    "https://www.polarisfurniture.com/collections/bedroom/products/gt1-race-carbed-with-led-wheels-white-1"
-  );
+  
+  await page.goto(pageURls);
+  await page.waitForSelector('.modemagic__badge');
 
   const elements = await page.evaluate(() => {
     let element = {
       name: "",
       color: [],
       description: "",
-      stockImage: [],
+      images: [],
+      isInStockImage: "",
     };
 
     // for car color
@@ -37,24 +38,24 @@ async function getCarBed() {
     });
 
     //for in stock image
-    let imageUrls = []
+    let imageUrls = [];
     Array.from(
-        document.querySelectorAll(
-            ".product-gallery__thumbnail-list > a"
-        )
+      document.querySelectorAll(".product-gallery__thumbnail-list > a")
     ).map((x) => {
-        imageUrls.push(x.href)
-    })
+      imageUrls.push(x.href);
+    });
 
-    element.stockImage = imageUrls
+    element.isInStockImage = document.querySelector(".modemagic__badge").src
+
+    element.images = imageUrls;
     element.color = colors;
     element.description = description;
 
     return element;
   });
 
-  console.log(elements);
   await browser.close();
+  return elements;
 }
 
-getCarBed();
+exports.getCarBed = getCarBed;
