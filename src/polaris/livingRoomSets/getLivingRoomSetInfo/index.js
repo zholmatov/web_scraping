@@ -9,6 +9,7 @@ async function getLivingRoomSetInfo(pageURl) {
 
   const elements = await page.evaluate(() => {
     let element = {
+      productId: "",
       name: "",
       color: [],
       images: [],
@@ -48,6 +49,13 @@ async function getLivingRoomSetInfo(pageURl) {
 
     // for the image which shows if its in stock or no
     element.isInStockImage = document.querySelector(".modemagic__badge").src;
+
+    // for productId
+    const productInfo = document
+      .querySelector("#shopify-section-product-recommendations > section")
+      .getAttribute("data-section-settings");
+
+    element.productId = JSON.parse(productInfo).productId;
 
     element.images = imageUrls;
     element.color = colors;
