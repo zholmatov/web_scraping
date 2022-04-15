@@ -1,23 +1,60 @@
-const puppeteer = require('puppeteer')
-
+const puppeteer = require("puppeteer");
 
 async function getCarBed() {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(
+    "https://www.polarisfurniture.com/collections/bedroom/products/gt1-race-carbed-with-led-wheels-white-1"
+  );
 
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage()
-    await page.goto("https://www.polarisfurniture.com/collections/bedroom/products/gt1-race-carbed-with-led-wheels-white")
+  const elements = await page.evaluate(() => {
+    let element = {
+      name: "",
+      color: [],
+      description: "",
+      stockImage: [],
+    };
 
+    // for car color
+    let colors = [];
+    Array.from(document.querySelectorAll(".block-swatch-list div")).map((x) => {
+      colors.push(x.querySelector(".block-swatch__item-text").innerText);
+    });
 
-    const elements = await page.evaluate(() => {
+    // for car name
+    element.name = document.querySelector(
+      "#shopify-section-product-template > section > div.container.container--flush > div.product-block-list.product-block-list--large > div > div.product-block-list__item.product-block-list__item--info > div > div.card__section > div.product-meta > h1"
+    ).innerText;
 
-        return Array.from(document.querySelectorAll("#shopify-section-product-template")).map(x => {
-            return x.ATTRIBUTE_NODE
-        })
+    //for description
+    let description = [];
+    Array.from(
+      document.querySelectorAll(
+        "#shopify-section-product-template > section > div.container.container--flush > div.product-block-list.product-block-list--large > div > div.product-block-list__item.product-block-list__item--description > div > div.card__section > div > ul > li"
+      )
+    ).map((x) => {
+      description.push(x.innerText);
+    });
+
+    //for in stock image
+    let imageUrls = []
+    Array.from(
+        document.querySelectorAll(
+            ".product-gallery__thumbnail-list > a"
+        )
+    ).map((x) => {
+        imageUrls.push(x.href)
     })
 
-    console.log(elements[0])
-    await browser.close()
+    element.stockImage = imageUrls
+    element.color = colors;
+    element.description = description;
 
+    return element;
+  });
+
+  console.log(elements);
+  await browser.close();
 }
 
-getCarBed()
+getCarBed();
