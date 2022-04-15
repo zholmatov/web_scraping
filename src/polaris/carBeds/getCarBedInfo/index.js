@@ -9,6 +9,7 @@ async function getCarBed(pageURl) {
 
   const elements = await page.evaluate(() => {
     let element = {
+      productId: "",
       name: "",
       color: [],
       description: "",
@@ -45,8 +46,14 @@ async function getCarBed(pageURl) {
       imageUrls.push(x.href);
     });
 
-    element.isInStockImage = document.querySelector(".modemagic__badge").src
+    // for productId
+    const productInfo = document.querySelector(
+      "#shopify-section-product-recommendations > section"
+    ).getAttribute('data-section-settings')
+    
+    element.productId = JSON.parse(productInfo).productId
 
+    element.isInStockImage = document.querySelector(".modemagic__badge").src
     element.images = imageUrls;
     element.color = colors;
     element.description = description;
