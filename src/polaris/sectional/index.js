@@ -1,13 +1,11 @@
 const puppeteer = require("puppeteer");
-const helper = require("./getAccessoryInfo");
+const helper = require("./getSectionInfo");
 const helper2 = require("../helper/distributeElements");
 
-const getAccessoriesInfo = async function () {
+const getSectionalsInfo = async function () {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.goto(
-    "https://www.polarisfurniture.com/collections/accessories/Accessories"
-  );
+  await page.goto("https://www.polarisfurniture.com/collections/sectional");
 
   const elements = await page.evaluate(() => {
     let accessoryURLs = [];
@@ -24,20 +22,20 @@ const getAccessoriesInfo = async function () {
 
   const parts = helper2.distributeEllements(elements);
 
-  console.log(parts)
+  console.log(parts);
   let mainInfo = [];
 
   for (let k = 0; k < parts.length; k++) {
     const infos = parts[k].map(async (pageURL) => {
-        const info = await helper.getAccessory(pageURL);
-        return info;
+      const info = await helper.getSectional(pageURL);
+      return info;
     });
     const accessoriesInfo = await Promise.all(infos);
     mainInfo = mainInfo.concat(accessoriesInfo);
   }
 
-  console.log(mainInfo);
+  console.log(mainInfo.slice(0, 5));
   await browser.close();
 };
 
-getAccessoriesInfo();
+getSectionalsInfo();
