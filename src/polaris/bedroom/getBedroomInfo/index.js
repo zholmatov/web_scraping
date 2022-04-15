@@ -1,10 +1,10 @@
 const puppeteer = require("puppeteer");
 
-async function getBedroom(pageURls) {
+async function getBedroom(pageURl) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  await page.goto(pageURls);
+  await page.goto(pageURl);
   await page.waitForSelector(".modemagic__badge");
 
   const elements = await page.evaluate(() => {
