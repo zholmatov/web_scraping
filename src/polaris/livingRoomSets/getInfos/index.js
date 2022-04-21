@@ -22,7 +22,6 @@ const getInfos = async function (setURL) {
 
   const parts = helper2.distributeEllements(elements);
 
-  console.log(parts);
   let mainInfo = [];
 
   for (let k = 0; k < parts.length; k++) {

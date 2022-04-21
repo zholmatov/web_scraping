@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const helper = require("./getBedroomInfo");
+const helper2 = require("../helper/distributeElements")
 
 const getBedroomsInfo = async function () {
   const browser = await puppeteer.launch();
@@ -19,14 +20,20 @@ const getBedroomsInfo = async function () {
     return bedroomURLs;
   });
 
-  const infos = await elements.map(async (pageURL) => {
-    const info = await helper.getBedroom(pageURL);
-    return info;
-  });
+  const parts = helper2.distributeEllements(elements);
 
-  const bedroomInfos = await Promise.all(infos);
+  let mainInfo = [];
 
-  console.log(bedroomInfos);
+  for (let k = 0; k < parts.length; k++) {
+    const infos = parts[k].map(async (pageURL) => {
+        const info = await helper.getBedroom(pageURL);
+        return info;
+    });
+    const accessoriesInfo = await Promise.all(infos);
+    mainInfo = mainInfo.concat(accessoriesInfo);
+  }
+
+  console.log(mainInfo);
   await browser.close();
 };
 
